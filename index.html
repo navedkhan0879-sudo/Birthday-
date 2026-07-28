@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday Princess Monika</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Poppins:wght@300;400;600&display=swap');
+
+        :root {
+            --pink-light: #fff0f3;
+            --pink-main: #ff85a1;
+            --gold: #d4af37;
+            --gold-gradient: linear-gradient(45deg, #d4af37, #fcf6ba, #d4af37, #bf953f);
+            --glass: rgba(255, 255, 255, 0.25);
+            --white: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: radial-gradient(circle at top, #fff5f7 0%, #ffe0e9 100%);
+            font-family: 'Poppins', sans-serif;
+            overflow-x: hidden;
+            color: #4a4a4a;
+            min-height: 100vh;
+        }
+
+        /* --- Loading Screen --- */
+        #loader {
+            position: fixed;
+            inset: 0;
+            background: var(--white);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 1s ease-out, visibility 1s;
+        }
+        .loader-heart {
+            font-size: 50px;
+            color: var(--pink-main);
+            animation: pulse 1.2s infinite;
+        }
+        .loader-text {
+            margin-top: 20px;
+            font-family: 'Dancing Script', cursive;
+            font-size: 24px;
+            color: var(--gold);
+        }
+
+        /* --- Background Elements --- */
+        canvas#fireworks {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .floating-container {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        /* --- Main Content --- */
+        .main-wrapper {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            z-index: 20;
+        }
+
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 15px 35px rgba(255, 133, 161, 0.2);
+            padding: 40px 20px;
+            margin-bottom: 30px;
+            animation: fadeInDown 1.5s ease-out;
+        }
+
+        h1 {
+            font-family: 'Dancing Script', cursive;
+            font-size: 3.5rem;
+            background: var(--gold-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .princess-tag {
+            font-size: 1.2rem;
+            color: var(--pink-main);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        /* --- Slideshow --- */
+        .slideshow-container {
+            width: 100%;
+            height: 350px;
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+            border: 5px solid white;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            margin: 25px 0;
+        }
+        .slide {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+            background-size: cover;
+            background-position: center;
+        }
+        .slide.active { opacity: 1; }
+
+        /* --- Birthday Cake --- */
+        .cake-container {
+            margin: 40px auto;
+            position: relative;
+            width: 200px;
+            height: 200px;
+        }
+        .cake {
+            position: absolute;
+            bottom: 0;
+            width: 160px;
+            height: 60px;
+            background: #f4e1d2;
+            border-radius: 10px 10px 0 0;
+            left: 20px;
+        }
+        .cake::before {
+            content: '';
+            position: absolute;
+            top: -40px;
+            left: 10px;
+            width: 140px;
+            height: 40px;
+            background: #ffb7c5;
+            border-radius: 10px 10px 0 0;
+        }
+        .cake::after {
+            content: '';
+            position: absolute;
+            top: -70px;
+            left: 30px;
+            width: 100px;
+            height: 30px;
+            background: #fff;
+            border-radius: 10px 10px 0 0;
+        }
+        .candle {
+            position: absolute;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 10px;
+            height: 35px;
+            background: var(--gold-gradient);
+            border-radius: 3px;
+        }
+        .flame {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 12px;
+            height: 20px;
+            background: #ffdb58;
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            animation: flicker 0.5s infinite alternate;
+            box-shadow: 0 0 15px #ffdb58;
+        }
+
+        /* --- Button & Popup --- */
+        .btn-heart {
+            background: var(--gold-gradient);
+            color: #fff;
+            border: none;
+            padding: 15px 35px;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
+            transition: transform 0.3s, box-shadow 0.3s;
+            font-weight: 600;
+            margin-top: 20px;
+        }
+        .btn-heart:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(212, 175, 55, 0.6);
+        }
+
+        #popup {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+        .popup-content {
+            background: #fff;
+            max-width: 500px;
+            width: 100%;
+            padding: 30px;
+            border-radius: 20px;
+            position: relative;
+            text-align: left;
+            max-height: 80vh;
+            overflow-y: auto;
+            border: 4px solid var(--gold);
+        }
+        .love-letter {
+            font-family: 'Playfair Display', serif;
+            line-height: 1.6;
+            font-style: italic;
+        }
+        .close-popup {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--pink-main);
+        }
+
+        /* --- Footer --- */
+        .ending-msg {
+            margin: 50px 0;
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.5rem;
+            color: var(--pink-main);
+        }
+
+        /* --- Keyframes --- */
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); } }
+        @keyframes flicker { from { opacity: 0.8; transform: translateX(-50%) scale(1); } to { opacity: 1; transform: translateX(-50%) scale(1.1); } }
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes floatUp { to { transform: translateY(-120vh) rotate(360deg); opacity: 0; } }
+
+        /* --- Responsive --- */
+        @media (max-width: 600px) {
+            h1 { font-size: 2.5rem; }
+            .slideshow-container { height: 250px; }
+            .glass-card { padding: 30px 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Loading Screen -->
+    <div id="loader">
+        <div class="loader-heart">❤️</div>
+        <div class="loader-text">Preparing something special...</div>
+    </div>
+
+    <canvas id="fireworks"></canvas>
+    <div class="floating-container" id="floatLayer"></div>
+
+    <div class="main-wrapper">
+        <div class="glass-card">
+            <span class="princess-tag">My Princess</span>
+            <h1>Monika</h1>
+            <p style="color: var(--gold); font-weight: 600; margin-bottom: 20px;">27 July 2005</p>
+            
+            <div class="slideshow-container" id="slideshow">
+                <!-- Placeholders (Replace with real URLs) -->
+                <div class="slide active" style="background-image: url('https://images.unsplash.com/photo-1518133910546-b6c2fb7d79e3?q=80&w=600&auto=format&fit=crop')"></div>
+                <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1530103043960-ef38714abb15?q=80&w=600&auto=format&fit=crop')"></div>
+                <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1464349153735-7db50ed83c84?q=80&w=600&auto=format&fit=crop')"></div>
+            </div>
+
+            <div class="cake-container">
+                <div class="cake">
+                    <div class="candle">
+                        <div class="flame"></div>
+                    </div>
+                </div>
+            </div>
+
+            <p style="font-size: 1.1rem; line-height: 1.6; margin-bottom: 20px;">
+                Today is the day the world was graced with a Queen. <br>
+                Happy 19th Birthday to my favorite person!
+            </p>
+
+            <button class="btn-heart" onclick="openHeart()">Open My Heart ❤️</button>
+        </div>
+
+        <div class="ending-msg">
+            "Happy Birthday My Princess Monika ❤️<br>
+            Forever Yours, Naved"
+        </div>
+    </div>
+
+    <!-- Surprise Popup -->
+    <div id="popup">
+        <div class="popup-content">
+            <span class="close-popup" onclick="closeHeart()">&times;</span>
+            <h2 style="font-family: 'Dancing Script', cursive; color: var(--pink-main); margin-bottom: 15px; font-size: 2rem;">Dear Monika,</h2>
+            <div class="love-letter">
+                <p>To my beautiful Princess Monika,</p><br>
+                <p>On this special day, I want you to know how much you mean to me. Since the moment you entered my life, every day has felt like a celebration. You are not just a girl; you are the magic in my reality.</p><br>
+                <p>Watching you grow and shine is my greatest joy. At 19, you are more radiant than ever. May this year bring you all the gold and glitter your heart desires, because you deserve nothing less than the world.</p><br>
+                <p>I promise to stay by your side, to celebrate your wins and hold you through the rest. Happy Birthday, my love.</p><br>
+                <p style="text-align: right;">With all my love,<br><strong>Naved</strong></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Background Music (Hidden) -->
+    <audio id="bgMusic" loop>
+        <source src="https://www.bensound.com/bensound-music/bensound-tenderness.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        // --- Loader Logic ---
+        window.onload = () => {
+            const loader = document.getElementById('loader');
+            setTimeout(() => {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.style.visibility = 'hidden', 1000);
+                startEffects();
+            }, 2000);
+        };
+
+        function startEffects() {
+            createFloatingItems();
+            initFireworks();
+            startSlideshow();
+        }
+
+        // --- Slideshow Logic ---
+        function startSlideshow() {
+            let current = 0;
+            const slides = document.querySelectorAll('.slide');
+            setInterval(() => {
+                slides[current].classList.remove('active');
+                current = (current + 1) % slides.length;
+                slides[current].classList.add('active');
+            }, 3500);
+        }
+
+        // --- Floating Hearts & Balloons ---
+        function createFloatingItems() {
+            const container = document.getElementById('floatLayer');
+            const icons = ['❤️', '🎈', '💖', '✨', '🌸'];
+            
+            setInterval(() => {
+                const el = document.createElement('div');
+                el.innerHTML = icons[Math.floor(Math.random() * icons.length)];
+                el.style.position = 'absolute';
+                el.style.left = Math.random() * 100 + 'vw';
+                el.style.bottom = '-50px';
+                el.style.fontSize = (Math.random() * 20 + 20) + 'px';
+                el.style.animation = `floatUp ${Math.random() * 3 + 4}s linear forwards`;
+                el.style.opacity = Math.random();
+                container.appendChild(el);
+                
+                setTimeout(() => el.remove(), 7000);
+            }, 400);
+        }
+
+        // --- Heart Popup & Music ---
+        function openHeart() {
+            document.getElementById('popup').style.display = 'flex';
+            const music = document.getElementById('bgMusic');
+            music.play().catch(() => console.log("Autoplay blocked, user interaction required."));
+        }
+
+        function closeHeart() {
+            document.getElementById('popup').style.display = 'none';
+        }
+
+        // --- Fireworks Animation (Canvas) ---
+        function initFireworks() {
+            const canvas = document.getElementById('fireworks');
+            const ctx = canvas.getContext('2d');
+            let particles = [];
+
+            function resize() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            window.addEventListener('resize', resize);
+            resize();
+
+            class Particle {
+                constructor(x, y, color) {
+                    this.x = x;
+                    this.y = y;
+                    this.color = color;
+                    this.velocity = {
+                        x: (Math.random() - 0.5) * 8,
+                        y: (Math.random() - 0.5) * 8
+                    };
+                    this.alpha = 1;
+                    this.friction = 0.95;
+                }
+                draw() {
+                    ctx.globalAlpha = this.alpha;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
+                    ctx.fillStyle = this.color;
+                    ctx.fill();
+                }
+                update() {
+                    this.velocity.x *= this.friction;
+                    this.velocity.y *= this.friction;
+                    this.x += this.velocity.x;
+                    this.y += this.velocity.y;
+                    this.alpha -= 0.01;
+                }
+            }
+
+            function createFirework() {
+                const x = Math.random() * canvas.width;
+                const y = Math.random() * (canvas.height / 2);
+                const colors = ['#ff85a1', '#d4af37', '#ffffff', '#ffd1dc'];
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                for (let i = 0; i < 40; i++) {
+                    particles.push(new Particle(x, y, color));
+                }
+            }
+
+            function animate() {
+                requestAnimationFrame(animate);
+                ctx.fillStyle = 'rgba(255, 245, 247, 0.1)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                particles.forEach((p, i) => {
+                    if (p.alpha > 0) {
+                        p.update();
+                        p.draw();
+                    } else {
+                        particles.splice(i, 1);
+                    }
+                });
+            }
+
+            setInterval(createFirework, 1500);
+            animate();
+        }
+    </script>
+</body>
+</html>
